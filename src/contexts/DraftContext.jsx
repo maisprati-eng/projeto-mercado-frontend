@@ -1,10 +1,13 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { api } from "../services/api";
 import { toast } from "react-toastify";
+import { useAuth } from "./AuthContext";
 
 const DraftContext = createContext();
 
 export const DraftProvider = ({ children }) => {
+    const { authData } = useAuth();
+
     const [draftItems, setDraftItems] = useState(() => {
         const stored = localStorage.getItem("draftItems");
         return stored ? JSON.parse(stored) : [];
@@ -34,7 +37,10 @@ export const DraftProvider = ({ children }) => {
         }
     }, [market, draftItems]);
 
-    const fetchRascunhos = async () => {
+    const fetchDrafts = async () => {
+
+        if (!authData || !authData.token) return;
+
         setLoadingSaved(true);
         try {
             const res = await api.get("/api/rascunhos");
@@ -45,19 +51,27 @@ export const DraftProvider = ({ children }) => {
             }
         } catch (err) {
             console.error("Erro ao buscar rascunhos:", err);
-            const msg = err && err.response && err.response.data ? JSON.stringify(err.response.data) : err.message || String(err);
-            toast.error(`Não foi possível carregar rascunhos: ${msg}`);
+            if (authData?.token) {
+
+                const msg = err?.response?.data
+                    ? JSON.stringify(err.response.data)
+                    : err.message || String(err);
+                toast.error(`Não foi possível carregar rascunhos: ${msg}`);
+            }
         } finally {
             setLoadingSaved(false);
         }
     };
 
-    useEffect(() => {
-        fetchRascunhos();
-    }, []);
 
     useEffect(() => {
-        const handler = () => fetchRascunhos();
+        if (authData?.token) {
+            fetchDrafts();
+        }
+    }, [authData?.token]);
+
+    useEffect(() => {
+        const handler = () => fetchDrafts();
         window.addEventListener('rascunhos:updated', handler);
         return () => window.removeEventListener('rascunhos:updated', handler);
     }, []);
@@ -155,7 +169,7 @@ export const DraftProvider = ({ children }) => {
             isSaving,
             savedRascunhos,
             loadingSaved,
-            fetchRascunhos
+            fetchDrafts
         }}>
             {children}
         </DraftContext.Provider>

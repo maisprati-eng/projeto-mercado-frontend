@@ -19,7 +19,7 @@ const Drafts = () => {
     draftItems = [],
     savedRascunhos,
     loadingSaved,
-    fetchRascunhos
+    fetchDrafts
   } = useDraft();
 
   const handleUnitCompareClick = () => {
@@ -27,7 +27,7 @@ const Drafts = () => {
   };
 
   useEffect(() => {
-    fetchRascunhos();
+    fetchDrafts();
   }, []);
 
   const hasSavedRascunhos = savedRascunhos && savedRascunhos.length > 0;
@@ -60,7 +60,7 @@ const Drafts = () => {
         <section style={{ padding: "1.5rem 0" }}>
           <DraftsTable
             savedRascunhos={savedRascunhos}
-            refresh={fetchRascunhos}
+            refresh={fetchDrafts}
             formatDate={formatLocalDate}
             loading={loadingSaved}
           />
