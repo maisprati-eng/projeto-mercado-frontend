@@ -12,10 +12,10 @@ export const AuthProvider = ({ children }) => {
 
     const navigate = useNavigate();
 
-    const login = ({ token, refreshToken }) => {
+    const login = ({ token, refreshTokenId }) => {
         localStorage.setItem("accessToken", token);
-        localStorage.setItem("refreshToken", refreshToken);
-        setAuthData({ token, refreshToken });
+        localStorage.setItem("refreshToken", refreshTokenId);
+        setAuthData({ token, refreshTokenId });
         navigate("/dashboard");
     };
 

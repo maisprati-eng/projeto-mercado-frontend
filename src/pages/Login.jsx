@@ -24,7 +24,7 @@ const Login = () => {
     try {
       const response = await api.post("/auth/login", userData);
       const { token, refreshTokenId } = response.data;
-      login({ token, refreshToken: refreshTokenId });
+      login({ token, refreshTokenId });
       reset();
       console.log(response.data)
       toast.success("Usuário logado com sucesso!");
